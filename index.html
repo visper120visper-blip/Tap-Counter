@@ -3,7 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tasbih Counter</title>
+
+<title>Tasbih Counter – Online Dhikr Tap Counter</title>
+
+<meta name="description" content="A calm and simple online Tasbih counter for Muslims. Tap to count dhikr like SubhanAllah, Alhamdulillah, and Allahu Akbar. Works offline.">
+<meta name="keywords" content="tasbih counter, dhikr counter, islamic tap counter, online tasbih, muslim tasbih">
+<meta name="author" content="Vayle">
+
+<meta property="og:title" content="Tasbih Counter">
+<meta property="og:description" content="A calming online tasbih counter for dhikr and remembrance of Allah.">
+<meta property="og:type" content="website">
 
 <style>
     body {
@@ -22,7 +31,7 @@
         backdrop-filter: blur(12px);
         border-radius: 22px;
         padding: 26px;
-        width: 320px;
+        width: 330px;
         text-align: center;
         box-shadow: 0 12px 35px rgba(0,0,0,0.45);
     }
@@ -44,7 +53,7 @@
     }
 
     .counter {
-        font-size: 54px;
+        font-size: 56px;
         font-weight: bold;
         margin: 18px 0 6px;
     }
@@ -55,8 +64,8 @@
     }
 
     .tap-btn {
-        width: 165px;
-        height: 165px;
+        width: 170px;
+        height: 170px;
         border-radius: 50%;
         border: none;
         background: radial-gradient(circle, #34d399, #059669);
@@ -75,7 +84,7 @@
 
     .controls {
         display: flex;
-        gap: 10px;
+        gap: 8px;
         margin-top: 18px;
     }
 
@@ -99,13 +108,19 @@
         font-size: 14px;
         opacity: 0.8;
     }
+
+    .seo-text {
+        font-size: 12px;
+        opacity: 0.75;
+        margin-top: 12px;
+    }
 </style>
 </head>
 
 <body>
 
 <div class="tasbih-box">
-    <h1>Tasbih</h1>
+    <h1>Tasbih Counter</h1>
 
     <select id="dhikr">
         <option value="SubhanAllah">SubhanAllah</option>
@@ -126,12 +141,12 @@
     </div>
 
     <div class="bismillah">بِسْمِ ٱللَّٰهِ</div>
-</div>
 
-<!-- Calming soft tap sound (embedded, offline) -->
-<audio id="tapSound" preload="auto">
-  <source src="data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCA..." type="audio/mp3">
-</audio>
+    <!-- Visible SEO text (Google reads this) -->
+    <div class="seo-text">
+        Online tasbih counter for dhikr and remembrance of Allah. Free Islamic tap counter.
+    </div>
+</div>
 
 <script>
     let count = Number(localStorage.getItem("count")) || 0;
@@ -141,18 +156,33 @@
     const countEl = document.getElementById("count");
     const limitEl = document.getElementById("limit");
     const dhikrEl = document.getElementById("dhikr");
-    const sound = document.getElementById("tapSound");
 
-    dhikrEl.value = localStorage.getItem("dhikr") || "SubhanAllah";
     countEl.textContent = count;
     limitEl.textContent = limit;
+    dhikrEl.value = localStorage.getItem("dhikr") || "SubhanAllah";
+
+    // Web Audio API (reliable calming tap)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playTapSound() {
+        if (muted) return;
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = "sine";
+        osc.frequency.value = 420; // soft tone
+        gain.gain.value = 0.06;    // very calm volume
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.04); // short tap
+    }
 
     function increment() {
-        if (!muted) {
-            sound.currentTime = 0;
-            sound.volume = 0.3;
-            sound.play();
-        }
+        playTapSound();
 
         count++;
         if (count >= limit) count = 0;
