@@ -21,14 +21,14 @@
         background: rgba(255, 255, 255, 0.08);
         backdrop-filter: blur(12px);
         border-radius: 22px;
-        padding: 28px;
+        padding: 26px;
         width: 320px;
         text-align: center;
         box-shadow: 0 12px 35px rgba(0,0,0,0.45);
     }
 
     h1 {
-        margin-bottom: 6px;
+        margin: 0;
         font-size: 22px;
         letter-spacing: 1px;
     }
@@ -38,15 +38,15 @@
         padding: 8px;
         border-radius: 10px;
         border: none;
-        margin-top: 10px;
+        margin-top: 12px;
         font-size: 15px;
         outline: none;
     }
 
     .counter {
-        font-size: 52px;
+        font-size: 54px;
         font-weight: bold;
-        margin: 18px 0;
+        margin: 18px 0 6px;
     }
 
     .limit {
@@ -55,8 +55,8 @@
     }
 
     .tap-btn {
-        width: 160px;
-        height: 160px;
+        width: 165px;
+        height: 165px;
         border-radius: 50%;
         border: none;
         background: radial-gradient(circle, #34d399, #059669);
@@ -66,7 +66,7 @@
         box-shadow: inset 0 0 10px rgba(255,255,255,0.3),
                     0 10px 25px rgba(0,0,0,0.5);
         transition: transform 0.1s ease;
-        margin-top: 16px;
+        margin-top: 18px;
     }
 
     .tap-btn:active {
@@ -75,9 +75,8 @@
 
     .controls {
         display: flex;
-        justify-content: space-between;
-        margin-top: 18px;
         gap: 10px;
+        margin-top: 18px;
     }
 
     .controls button {
@@ -88,6 +87,7 @@
         background: transparent;
         color: white;
         cursor: pointer;
+        font-size: 13px;
     }
 
     .controls button:hover {
@@ -107,7 +107,7 @@
 <div class="tasbih-box">
     <h1>Tasbih</h1>
 
-    <select id="dhikr" onchange="saveState()">
+    <select id="dhikr">
         <option value="SubhanAllah">SubhanAllah</option>
         <option value="Alhamdulillah">Alhamdulillah</option>
         <option value="Allahu Akbar">Allahu Akbar</option>
@@ -121,38 +121,41 @@
     <div class="controls">
         <button onclick="setLimit(33)">33</button>
         <button onclick="setLimit(99)">99</button>
+        <button onclick="toggleSound()">🔊</button>
         <button onclick="resetCounter()">Reset</button>
     </div>
 
     <div class="bismillah">بِسْمِ ٱللَّٰهِ</div>
 </div>
 
-<audio id="clickSound">
-    <source src="data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCA..." type="audio/mp3">
+<!-- Calming soft tap sound (embedded, offline) -->
+<audio id="tapSound" preload="auto">
+  <source src="data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCA..." type="audio/mp3">
 </audio>
 
 <script>
     let count = Number(localStorage.getItem("count")) || 0;
     let limit = Number(localStorage.getItem("limit")) || 33;
+    let muted = localStorage.getItem("muted") === "true";
 
     const countEl = document.getElementById("count");
     const limitEl = document.getElementById("limit");
     const dhikrEl = document.getElementById("dhikr");
-    const sound = document.getElementById("clickSound");
+    const sound = document.getElementById("tapSound");
 
     dhikrEl.value = localStorage.getItem("dhikr") || "SubhanAllah";
-
     countEl.textContent = count;
     limitEl.textContent = limit;
 
     function increment() {
-        sound.currentTime = 0;
-        sound.play();
+        if (!muted) {
+            sound.currentTime = 0;
+            sound.volume = 0.3;
+            sound.play();
+        }
 
         count++;
-        if (count >= limit) {
-            count = 0;
-        }
+        if (count >= limit) count = 0;
         update();
     }
 
@@ -167,6 +170,11 @@
         update();
     }
 
+    function toggleSound() {
+        muted = !muted;
+        localStorage.setItem("muted", muted);
+    }
+
     function update() {
         countEl.textContent = count;
         limitEl.textContent = limit;
@@ -178,6 +186,8 @@
         localStorage.setItem("limit", limit);
         localStorage.setItem("dhikr", dhikrEl.value);
     }
+
+    dhikrEl.addEventListener("change", saveState);
 </script>
 
 </body>
