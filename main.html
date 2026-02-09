@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Tasbih Counter</title>
+    <style>
+        body { text-align: center; font-family: sans-serif; padding-top: 50px; }
+        #count { font-size: 80px; margin: 20px; }
+        button { font-size: 20px; padding: 15px 30px; cursor: pointer; border-radius: 10px; }
+        .reset { background-color: #ffcccc; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Tasbih Counter</h1>
+    <div id="count">0</div>
+    <button onclick="countUp()">TAP</button><br>
+    <button class="reset" onclick="resetCount()">Reset</button>
+
+    <script>
+        let counter = 0;
+        function countUp() {
+            counter++;
+            document.getElementById("count").innerText = counter;
+        }
+        function resetCount() {
+            counter = 0;
+            document.getElementById("count").innerText = counter;
+        }
+    </script>
+</body>
+</html>
